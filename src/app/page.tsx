@@ -6,36 +6,22 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  DEFAULT_CHARACTER_LENGTH,
+  GENERATION_TYPES,
+  PASSWORD_LENGTHS,
+} from '@/lib/constants';
+import { generatePassword } from '@/lib/generate';
+import type { PasswordOptions, GenerationType } from '@/lib/types';
 import { ClipboardIcon, RefreshCwIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-const GENERATION_TYPES = {
-  PASSWORD: 'password',
-  PASSPHRASE: 'passphrase',
-} as const;
-
-const PASSWORD_LENGTHS = {
-  MAX: 125,
-  MIN: 5,
+const defaultPasswordOptions: PasswordOptions = {
+  uppercase: true,
+  lowercase: true,
+  numbers: true,
+  specialCharacters: false,
 };
-
-const PASSWORD_SCORES = {
-  VERY_WEAK: 'very weak',
-  WEAK: 'weak',
-  GOOD: 'good',
-  STRONG: 'strong',
-};
-
-type GenerationType = (typeof GENERATION_TYPES)[keyof typeof GENERATION_TYPES];
-
-interface AdditionalOptions {
-  uppercase: boolean;
-  lowercase: boolean;
-  numbers: boolean;
-  specialCharacters: boolean;
-}
-
-const DEFAULT_CHARACTER_LENGTH = 14;
 
 export default function Home() {
   const [copied, setCopied] = useState(false);
@@ -43,25 +29,24 @@ export default function Home() {
   const [characterLength, setCharacterLength] = useState(
     DEFAULT_CHARACTER_LENGTH
   );
-  const [additionalOptions, setAdditionalOptions] = useState<AdditionalOptions>(
-    {
-      uppercase: true,
-      lowercase: true,
-      numbers: true,
-      specialCharacters: false,
-    }
+  const [passwordOptions, setPasswordOptions] = useState<PasswordOptions>(
+    defaultPasswordOptions
   );
   const [passwordStats, setPasswordStats] = useState({
     score: '',
     timeToCrack: '',
   });
   const checkedOptionsCount =
-    Object.values(additionalOptions).filter(Boolean).length;
+    Object.values(passwordOptions).filter(Boolean).length;
 
   const [generatedResult, setGeneratedResult] = useState('fdslfkdslk4820Or2!');
 
   useEffect(() => {
-    // TODO: Generate the first password on mount with default config
+    const password = generatePassword(
+      defaultPasswordOptions,
+      DEFAULT_CHARACTER_LENGTH
+    );
+    setGeneratedResult(password);
   }, []);
 
   const copyToClipboard = async () => {
@@ -79,13 +64,18 @@ export default function Home() {
     }, 2500);
   };
 
-  const regenerate = () => {};
+  const regenerate = () => {
+    if (type === GENERATION_TYPES.PASSWORD) {
+      const password = generatePassword(passwordOptions, characterLength);
+      setGeneratedResult(password);
+    }
+  };
 
-  const handleAdditionalOptionChange = (
-    key: keyof AdditionalOptions,
-    value: AdditionalOptions[keyof AdditionalOptions]
+  const handlePasswordOptionChange = (
+    key: keyof PasswordOptions,
+    value: PasswordOptions[keyof PasswordOptions]
   ) => {
-    setAdditionalOptions((prev) => ({
+    setPasswordOptions((prev) => ({
       ...prev,
       [key]: value,
     }));
@@ -122,18 +112,8 @@ export default function Home() {
                 </div>
               </div>
               <div
-                className="rounded-md bg-muted w-full p-4 text-center font-[700] text-4xl font-mono"
-                onClick={copyToClipboard}
-                onKeyUp={(event) => {
-                  if (event.key === 'Enter') {
-                    copyToClipboard();
-                  }
-                }}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter') {
-                    copyToClipboard();
-                  }
-                }}
+                className="rounded-md bg-muted w-full p-4 text-center font-[700] text-4xl font-mono 
+  whitespace-pre-wrap break-words overflow-hidden"
               >
                 {generatedResult}
               </div>
@@ -189,12 +169,12 @@ export default function Home() {
                   <div className="flex items-center gap-2">
                     <Checkbox
                       id="options.uppercase"
-                      checked={additionalOptions.uppercase}
+                      checked={passwordOptions.uppercase}
                       disabled={
-                        additionalOptions.uppercase && checkedOptionsCount === 1
+                        passwordOptions.uppercase && checkedOptionsCount === 1
                       }
                       onCheckedChange={(checked) =>
-                        handleAdditionalOptionChange('uppercase', !!checked)
+                        handlePasswordOptionChange('uppercase', !!checked)
                       }
                     />
                     <Label htmlFor="options.uppercase">A-Z</Label>
@@ -202,12 +182,12 @@ export default function Home() {
                   <div className="flex items-center gap-2">
                     <Checkbox
                       id="options.lowercase"
-                      checked={additionalOptions.lowercase}
+                      checked={passwordOptions.lowercase}
                       disabled={
-                        additionalOptions.lowercase && checkedOptionsCount === 1
+                        passwordOptions.lowercase && checkedOptionsCount === 1
                       }
                       onCheckedChange={(checked) =>
-                        handleAdditionalOptionChange('lowercase', !!checked)
+                        handlePasswordOptionChange('lowercase', !!checked)
                       }
                     />
                     <Label htmlFor="options.lowercase">a-z</Label>
@@ -215,12 +195,12 @@ export default function Home() {
                   <div className="flex items-center gap-2">
                     <Checkbox
                       id="options.numbers"
-                      checked={additionalOptions.numbers}
+                      checked={passwordOptions.numbers}
                       disabled={
-                        additionalOptions.numbers && checkedOptionsCount === 1
+                        passwordOptions.numbers && checkedOptionsCount === 1
                       }
                       onCheckedChange={(checked) =>
-                        handleAdditionalOptionChange('numbers', !!checked)
+                        handlePasswordOptionChange('numbers', !!checked)
                       }
                     />
                     <Label htmlFor="options.numbers">0-9</Label>
@@ -228,13 +208,13 @@ export default function Home() {
                   <div className="flex items-center gap-2">
                     <Checkbox
                       id="options.specialCharacters"
-                      checked={additionalOptions.specialCharacters}
+                      checked={passwordOptions.specialCharacters}
                       disabled={
-                        additionalOptions.specialCharacters &&
+                        passwordOptions.specialCharacters &&
                         checkedOptionsCount === 1
                       }
                       onCheckedChange={(checked) =>
-                        handleAdditionalOptionChange(
+                        handlePasswordOptionChange(
                           'specialCharacters',
                           !!checked
                         )

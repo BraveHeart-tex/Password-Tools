@@ -148,6 +148,24 @@ export default function Home() {
     return 'text-sm md:text-lg';
   };
 
+  const getStyledPasswordSpans = (value: string) => {
+    return value.split('').map((char, idx) => {
+      let className = '';
+
+      if (/\d/.test(char)) {
+        className = 'text-blue-700';
+      } else if (/[^a-zA-Z0-9]/.test(char)) {
+        className = 'text-red-700';
+      }
+
+      return (
+        <span key={idx} className={className}>
+          {char}
+        </span>
+      );
+    });
+  };
+
   return (
     <main className="w-full min-h-screen flex justify-center flex-col bg-primary">
       <Card className="mx-auto w-[95%] md:max-w-[75%] xl:max-w-[70%]">
@@ -209,7 +227,7 @@ export default function Home() {
                     getFontSizeClass()
                   )}
                 >
-                  {generatedResult}
+                  {getStyledPasswordSpans(generatedResult)}
                 </span>
               </div>
               <div className="grid gap-2 md:grid-cols-2">

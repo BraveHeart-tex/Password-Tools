@@ -11,7 +11,7 @@ import {
   GENERATION_TYPES,
   PASSWORD_LENGTHS,
 } from '@/lib/constants';
-import { generatePassword } from '@/lib/generate';
+import { generatePassphrase, generatePassword } from '@/lib/generate';
 import type { PasswordOptions, GenerationType } from '@/lib/types';
 import { ClipboardIcon, RefreshCwIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -39,7 +39,7 @@ export default function Home() {
   const checkedOptionsCount =
     Object.values(passwordOptions).filter(Boolean).length;
 
-  const [generatedResult, setGeneratedResult] = useState('fdslfkdslk4820Or2!');
+  const [generatedResult, setGeneratedResult] = useState('');
 
   useEffect(() => {
     const password = generatePassword(
@@ -65,10 +65,11 @@ export default function Home() {
   };
 
   const regenerate = () => {
-    if (type === GENERATION_TYPES.PASSWORD) {
-      const password = generatePassword(passwordOptions, characterLength);
-      setGeneratedResult(password);
-    }
+    setGeneratedResult(
+      type === GENERATION_TYPES.PASSWORD
+        ? generatePassword(passwordOptions, characterLength)
+        : generatePassphrase(4, '-')
+    );
   };
 
   const handlePasswordOptionChange = (

@@ -36,7 +36,7 @@ const PasswordStrengthChecker = () => {
             id="enteredPassword"
             type={isVisible ? 'text' : 'password'}
             className={cn(
-              'h-15 text-3xl!',
+              'h-10 text-lg! md:text-2xl!',
               PASSWORD_SCORE_TEXT_CLASSES[
                 passwordStats.score as PasswordScoreLabel
               ]
@@ -60,7 +60,7 @@ const PasswordStrengthChecker = () => {
       </div>
       <div className="grid md:grid-cols-2 gap-6">
         <div className="grid gap-2">
-          <Label className="text-3xl font-medium">
+          <Label className="text-xl md:text-2xl font-medium">
             Your password strength:
           </Label>
           <span
@@ -76,7 +76,7 @@ const PasswordStrengthChecker = () => {
           </span>
         </div>
         <div className="grid gap-2">
-          <Label className="text-3xl font-medium">
+          <Label className="text-xl md:text-2xl font-medium">
             Estimated time to crack:
           </Label>
           <span

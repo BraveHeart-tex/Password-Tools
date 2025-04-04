@@ -2,18 +2,29 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import {
   DEFAULT_CHARACTER_LENGTH,
   GENERATION_TYPES,
   PASSWORD_LENGTHS,
 } from '@/lib/constants';
 import { generatePassphrase, generatePassword } from '@/lib/generate';
-import type { PasswordOptions, GenerationType } from '@/lib/types';
-import { ClipboardIcon, RefreshCwIcon } from 'lucide-react';
+import type {
+  PasswordOptions,
+  GenerationType,
+  PassphraseOptions,
+} from '@/lib/types';
+import { CircleHelpIcon, ClipboardIcon, RefreshCwIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const defaultPasswordOptions: PasswordOptions = {
@@ -21,6 +32,13 @@ const defaultPasswordOptions: PasswordOptions = {
   lowercase: true,
   numbers: true,
   specialCharacters: false,
+};
+
+const defaultPassphraseOptions: PassphraseOptions = {
+  capitalize: true,
+  includeNumber: false,
+  wordSeparator: '-',
+  wordCount: 4,
 };
 
 export default function Home() {
@@ -31,6 +49,9 @@ export default function Home() {
   );
   const [passwordOptions, setPasswordOptions] = useState<PasswordOptions>(
     defaultPasswordOptions
+  );
+  const [passphraseOptions, setPassphraseOptions] = useState<PassphraseOptions>(
+    defaultPassphraseOptions
   );
   const [passwordStats, setPasswordStats] = useState({
     score: '',
@@ -49,6 +70,10 @@ export default function Home() {
     setGeneratedResult(password);
   }, []);
 
+  useEffect(() => {
+    generate();
+  }, [type, passwordOptions, characterLength, passphraseOptions]);
+
   const copyToClipboard = async () => {
     if (!generatedResult) {
       alert(
@@ -64,19 +89,29 @@ export default function Home() {
     }, 2500);
   };
 
-  const regenerate = () => {
+  function generate() {
     setGeneratedResult(
       type === GENERATION_TYPES.PASSWORD
         ? generatePassword(passwordOptions, characterLength)
-        : generatePassphrase(4, '-')
+        : generatePassphrase(passphraseOptions)
     );
-  };
+  }
 
   const handlePasswordOptionChange = (
     key: keyof PasswordOptions,
     value: PasswordOptions[keyof PasswordOptions]
   ) => {
     setPasswordOptions((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
+  const handlePassphraseOptionChange = (
+    key: keyof PassphraseOptions,
+    value: PassphraseOptions[keyof PassphraseOptions]
+  ) => {
+    setPassphraseOptions((prev) => ({
       ...prev,
       [key]: value,
     }));
@@ -126,7 +161,7 @@ export default function Home() {
                   <ClipboardIcon />
                   {copied ? 'Copied!' : 'Copy to clipboard'}
                 </Button>
-                <Button onClick={regenerate} variant="outline">
+                <Button onClick={generate} variant="outline">
                   <RefreshCwIcon />
                   Regenerate
                 </Button>
@@ -149,80 +184,165 @@ export default function Home() {
                     </div>
                   </RadioGroup>
                 </div>
-                <div className="grid gap-1">
-                  <Label className="text-lg">
-                    Characters:
-                    <span>{characterLength}</span>
-                  </Label>
-                  <Slider
-                    max={PASSWORD_LENGTHS.MAX}
-                    min={PASSWORD_LENGTHS.MIN}
-                    value={[characterLength]}
-                    onValueChange={(value) => {
-                      setCharacterLength(value[0] || 0);
-                    }}
-                  />
-                </div>
+                {type === GENERATION_TYPES.PASSWORD ? (
+                  <div className="grid gap-1">
+                    <Label className="text-lg">
+                      Characters:
+                      <span>{characterLength}</span>
+                    </Label>
+                    <Slider
+                      max={PASSWORD_LENGTHS.MAX}
+                      min={PASSWORD_LENGTHS.MIN}
+                      value={[characterLength]}
+                      onValueChange={(value) => {
+                        setCharacterLength(value[0] || 0);
+                      }}
+                    />
+                  </div>
+                ) : null}
               </div>
               <div className="grid gap-1">
                 <Label className="text-lg">Additional Options</Label>
                 <div className="flex items-center gap-6">
                   <div className="flex items-center gap-2">
-                    <Checkbox
-                      id="options.uppercase"
-                      checked={passwordOptions.uppercase}
-                      disabled={
-                        passwordOptions.uppercase && checkedOptionsCount === 1
-                      }
-                      onCheckedChange={(checked) =>
-                        handlePasswordOptionChange('uppercase', !!checked)
-                      }
-                    />
-                    <Label htmlFor="options.uppercase">A-Z</Label>
+                    {type === GENERATION_TYPES.PASSWORD ? (
+                      <>
+                        <Checkbox
+                          id="passwordOptions.uppercase"
+                          checked={passwordOptions.uppercase}
+                          disabled={
+                            passwordOptions.uppercase &&
+                            checkedOptionsCount === 1
+                          }
+                          onCheckedChange={(checked) =>
+                            handlePasswordOptionChange('uppercase', !!checked)
+                          }
+                        />
+                        <Label htmlFor="passwordOptions.uppercase">A-Z</Label>
+                      </>
+                    ) : (
+                      <>
+                        <Checkbox
+                          id="passphraseOptions.capitalize"
+                          checked={passphraseOptions.capitalize}
+                          onCheckedChange={(checked) =>
+                            handlePassphraseOptionChange(
+                              'capitalize',
+                              !!checked
+                            )
+                          }
+                        />
+                        <Label htmlFor="passphraseOptions.capitalize">
+                          Capitalize
+                        </Label>
+                      </>
+                    )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <Checkbox
-                      id="options.lowercase"
-                      checked={passwordOptions.lowercase}
-                      disabled={
-                        passwordOptions.lowercase && checkedOptionsCount === 1
-                      }
-                      onCheckedChange={(checked) =>
-                        handlePasswordOptionChange('lowercase', !!checked)
-                      }
-                    />
-                    <Label htmlFor="options.lowercase">a-z</Label>
+                    {type === GENERATION_TYPES.PASSWORD ? (
+                      <>
+                        <Checkbox
+                          id="passwordOptions.lowercase"
+                          checked={passwordOptions.lowercase}
+                          disabled={
+                            passwordOptions.lowercase &&
+                            checkedOptionsCount === 1
+                          }
+                          onCheckedChange={(checked) =>
+                            handlePasswordOptionChange('lowercase', !!checked)
+                          }
+                        />
+                        <Label htmlFor="passwordOptions.lowercase">a-z</Label>
+                      </>
+                    ) : (
+                      <>
+                        <Checkbox
+                          id="passphraseOptions.includeNumber"
+                          checked={passphraseOptions.includeNumber}
+                          onCheckedChange={(checked) =>
+                            handlePassphraseOptionChange(
+                              'includeNumber',
+                              !!checked
+                            )
+                          }
+                        />
+                        <Label htmlFor="passphraseOptions.includeNumber">
+                          Include number
+                        </Label>
+                      </>
+                    )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <Checkbox
-                      id="options.numbers"
-                      checked={passwordOptions.numbers}
-                      disabled={
-                        passwordOptions.numbers && checkedOptionsCount === 1
-                      }
-                      onCheckedChange={(checked) =>
-                        handlePasswordOptionChange('numbers', !!checked)
-                      }
-                    />
-                    <Label htmlFor="options.numbers">0-9</Label>
+                    {type === GENERATION_TYPES.PASSWORD ? (
+                      <>
+                        <Checkbox
+                          id="passwordOptions.numbers"
+                          checked={passwordOptions.numbers}
+                          disabled={
+                            passwordOptions.numbers && checkedOptionsCount === 1
+                          }
+                          onCheckedChange={(checked) =>
+                            handlePasswordOptionChange('numbers', !!checked)
+                          }
+                        />
+                        <Label htmlFor="passwordOptions.numbers">0-9</Label>
+                      </>
+                    ) : (
+                      <>
+                        <Input
+                          id="passphraseOptions.wordSeparator"
+                          value={passphraseOptions.wordSeparator}
+                          type="text"
+                          minLength={1}
+                          maxLength={1}
+                          onChange={(event) => {
+                            handlePassphraseOptionChange(
+                              'wordSeparator',
+                              event.target.value
+                            );
+                          }}
+                          className="w-10 text-lg text-center"
+                        />
+                        <div className="flex items-center gap-1">
+                          <Label htmlFor="passphraseOptions.wordSeparator">
+                            Word Separator
+                          </Label>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <CircleHelpIcon />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                Enter a character to separate words <br />
+                                (e.g., "+" → "word1+word2+word3").
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      </>
+                    )}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      id="options.specialCharacters"
-                      checked={passwordOptions.specialCharacters}
-                      disabled={
-                        passwordOptions.specialCharacters &&
-                        checkedOptionsCount === 1
-                      }
-                      onCheckedChange={(checked) =>
-                        handlePasswordOptionChange(
-                          'specialCharacters',
-                          !!checked
-                        )
-                      }
-                    />
-                    <Label htmlFor="options.specialCharacters">!@#$%&*</Label>
-                  </div>
+                  {type === GENERATION_TYPES.PASSWORD ? (
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id="passwordOptions.specialCharacters"
+                        checked={passwordOptions.specialCharacters}
+                        disabled={
+                          passwordOptions.specialCharacters &&
+                          checkedOptionsCount === 1
+                        }
+                        onCheckedChange={(checked) =>
+                          handlePasswordOptionChange(
+                            'specialCharacters',
+                            !!checked
+                          )
+                        }
+                      />
+                      <Label htmlFor="passwordOptions.specialCharacters">
+                        !@#$%&*
+                      </Label>
+                    </div>
+                  ) : null}
                 </div>
               </div>
             </TabsContent>

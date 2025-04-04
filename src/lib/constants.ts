@@ -16,3 +16,8 @@ export const PASSWORD_SCORES = {
 };
 
 export const DEFAULT_CHARACTER_LENGTH = 14;
+
+export const PASSPHRASE_WORD_COUNT_CONFIG = {
+  MIN: 3,
+  MAX: 20,
+};

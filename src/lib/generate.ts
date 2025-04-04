@@ -1,4 +1,4 @@
-import type { PasswordOptions } from './types';
+import type { PassphraseOptions, PasswordOptions } from './types';
 import dicewareList from '@/data/diceware.json';
 
 const UPPERCASE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -27,12 +27,27 @@ export const generatePassword = (
   return result;
 };
 
-export const generatePassphrase = (wordCount = 4, separator = '-'): string => {
-  const words = [];
-  for (let i = 0; i < wordCount; i++) {
+export const generatePassphrase = (options: PassphraseOptions): string => {
+  let words = [];
+  for (let i = 0; i < options.wordCount; i++) {
     const randomIndex = Math.floor(Math.random() * dicewareList.length);
     words.push(dicewareList[randomIndex]);
   }
 
-  return words.join(separator);
+  if (options.includeNumber) {
+    const randomIndexToAddNumberTo = Math.floor(Math.random() * words.length);
+    words = words.map((word, index) => {
+      if (index === randomIndexToAddNumberTo) {
+        word += Math.floor(Math.random() * 9);
+      }
+
+      return word;
+    });
+  }
+
+  if (options.capitalize) {
+    words = words.map((word) => word[0].toUpperCase() + word.substring(1));
+  }
+
+  return words.join(options.wordSeparator);
 };

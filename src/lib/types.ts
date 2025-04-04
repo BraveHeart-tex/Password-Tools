@@ -7,5 +7,12 @@ export interface PasswordOptions {
   specialCharacters: boolean;
 }
 
+export interface PassphraseOptions {
+  capitalize: boolean;
+  includeNumber: boolean;
+  wordSeparator: string;
+  wordCount: number;
+}
+
 export type GenerationType =
   (typeof GENERATION_TYPES)[keyof typeof GENERATION_TYPES];

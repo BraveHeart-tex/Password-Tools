@@ -19,12 +19,14 @@ import {
   DEFAULT_PASSPHRASE_LENGTH,
   PASSPHRASE_WORD_COUNT_CONFIG,
   PASSWORD_LENGTHS,
+  PASSWORD_SCORE_TEXT_CLASSES,
 } from '@/lib/constants';
 import { generatePassphrase, generatePassword } from '@/lib/generate';
 import type {
   PasswordOptions,
   GenerationType,
   PassphraseOptions,
+  PasswordScoreLabel,
 } from '@/lib/types';
 import { cn, passwordOrPhraseScoreToLabel } from '@/lib/utils';
 import {
@@ -169,11 +171,31 @@ export default function Home() {
                       : 'passphrase'}{' '}
                     score:
                   </span>
-                  <span> {passwordStats.score}</span>
+                  <span
+                    className={cn(
+                      'font-bold',
+                      PASSWORD_SCORE_TEXT_CLASSES[
+                        passwordStats.score as PasswordScoreLabel
+                      ]
+                    )}
+                  >
+                    {' '}
+                    {passwordStats.score}
+                  </span>
                 </div>
                 <div className="font-medium text-base">
                   <span>Estimated time to crack: </span>
-                  <span> {passwordStats.timeToCrack}</span>
+                  <span
+                    className={cn(
+                      'font-bold',
+                      PASSWORD_SCORE_TEXT_CLASSES[
+                        passwordStats.score as PasswordScoreLabel
+                      ]
+                    )}
+                  >
+                    {' '}
+                    {passwordStats.timeToCrack}
+                  </span>
                 </div>
               </div>
               <div

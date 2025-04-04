@@ -1,4 +1,4 @@
-import type { GENERATION_TYPES } from './constants';
+import type { GENERATION_TYPES, PASSWORD_SCORE_LABELS } from './constants';
 
 export interface PasswordOptions {
   uppercase: boolean;
@@ -7,6 +7,8 @@ export interface PasswordOptions {
   specialCharacters: boolean;
 }
 
+type ValueOfObject<T> = T[keyof T];
+
 export interface PassphraseOptions {
   capitalize: boolean;
   includeNumber: boolean;
@@ -14,5 +16,6 @@ export interface PassphraseOptions {
   wordCount: number;
 }
 
-export type GenerationType =
-  (typeof GENERATION_TYPES)[keyof typeof GENERATION_TYPES];
+export type GenerationType = ValueOfObject<typeof GENERATION_TYPES>;
+
+export type PasswordScoreLabel = ValueOfObject<typeof PASSWORD_SCORE_LABELS>;

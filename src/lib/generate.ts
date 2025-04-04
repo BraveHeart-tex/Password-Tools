@@ -27,27 +27,26 @@ export const generatePassword = (
   return result;
 };
 
-export const generatePassphrase = (options: PassphraseOptions): string => {
-  let words = [];
-  for (let i = 0; i < options.wordCount; i++) {
-    const randomIndex = Math.floor(Math.random() * dicewareList.length);
-    words.push(dicewareList[randomIndex]);
+export const generatePassphrase = ({
+  wordCount,
+  includeNumber,
+  capitalize,
+  wordSeparator,
+}: PassphraseOptions): string => {
+  const getRandomWord = () =>
+    dicewareList[Math.floor(Math.random() * dicewareList.length)];
+
+  let words = Array.from({ length: wordCount }, getRandomWord);
+
+  if (includeNumber) {
+    const index = Math.floor(Math.random() * words.length);
+    const number = Math.floor(Math.random() * 9);
+    words[index] += number;
   }
 
-  if (options.includeNumber) {
-    const randomIndexToAddNumberTo = Math.floor(Math.random() * words.length);
-    words = words.map((word, index) => {
-      if (index === randomIndexToAddNumberTo) {
-        word += Math.floor(Math.random() * 9);
-      }
-
-      return word;
-    });
+  if (capitalize) {
+    words = words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
   }
 
-  if (options.capitalize) {
-    words = words.map((word) => word[0].toUpperCase() + word.substring(1));
-  }
-
-  return words.join(options.wordSeparator);
+  return words.join(wordSeparator);
 };

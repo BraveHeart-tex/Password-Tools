@@ -1,8 +1,6 @@
 # Password / Passphrase Generator & Tester
 
-This is my implementation of Bitwarden's Password / Passphrase generator and password strength checking tools.
-
-Generate strong passwords and secure passphrases instantly. Check their strength and improve your online security with ease.
+While checking out Bitwarden’s password tools, I thought—why not try building it myself? So I set out to create my own version of their password/passphrase generator and strength checker in just a few hours. It was a fun way to dive deeper into secure password practices and see how these tools work under the hood.
 
 ## Comparison
 

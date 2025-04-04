@@ -125,9 +125,20 @@ export default function Home() {
     }));
   };
 
+  const getFontSizeClass = () => {
+    const length = generatedResult.length;
+
+    if (length <= 20) return 'text-2xl md:text-4xl';
+    if (length <= 35) return 'text-xl md:text-3xl';
+    if (length <= 50) return 'text-lg md:text-2xl';
+    if (length <= 70) return 'text-base md:text-xl';
+
+    return 'text-sm md:text-lg';
+  };
+
   return (
     <main className="w-full min-h-screen flex justify-center flex-col bg-primary">
-      <Card className="mx-auto w-[95%] md:max-w-[75%] lg:max-w-[45%]">
+      <Card className="mx-auto w-[95%] md:max-w-[75%] xl:max-w-[70%]">
         <CardContent>
           <Tabs defaultValue="generator">
             <TabsList>
@@ -156,10 +167,15 @@ export default function Home() {
                 </div>
               </div>
               <div
-                className="rounded-md bg-muted w-full p-4 text-center font-[700] text-4xl font-mono 
-  whitespace-pre-wrap break-words overflow-hidden"
+                className="rounded-md bg-muted p-4 px-2 text-center font-[700] font-mono 
+                h-[5.5rem] flex items-center justify-center overflow-hidden"
+                data-allow-shifts
               >
-                {generatedResult}
+                <div
+                  className={`${getFontSizeClass()} text-balance whitespace-pre-wrap`}
+                >
+                  {generatedResult}
+                </div>
               </div>
               <div className="grid gap-2 md:grid-cols-2">
                 <Button

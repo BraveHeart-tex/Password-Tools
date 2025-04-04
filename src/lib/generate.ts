@@ -1,3 +1,4 @@
+import { DEFAULT_PASSPHRASE_LENGTH } from './constants';
 import type { PassphraseOptions, PasswordOptions } from './types';
 import dicewareList from '@/data/diceware.json';
 
@@ -36,7 +37,10 @@ export const generatePassphrase = ({
   const getRandomWord = () =>
     dicewareList[Math.floor(Math.random() * dicewareList.length)];
 
-  let words = Array.from({ length: wordCount }, getRandomWord);
+  let words = Array.from(
+    { length: wordCount || DEFAULT_PASSPHRASE_LENGTH },
+    getRandomWord
+  );
 
   if (includeNumber) {
     const index = Math.floor(Math.random() * words.length);
@@ -48,5 +52,5 @@ export const generatePassphrase = ({
     words = words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
   }
 
-  return words.join(wordSeparator);
+  return words.join(wordSeparator || ' ');
 };

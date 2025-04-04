@@ -14,8 +14,10 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import {
-  DEFAULT_CHARACTER_LENGTH,
+  DEFAULT_PASSWORD_LENGTH,
   GENERATION_TYPES,
+  DEFAULT_PASSPHRASE_LENGTH,
+  PASSPHRASE_WORD_COUNT_CONFIG,
   PASSWORD_LENGTHS,
 } from '@/lib/constants';
 import { generatePassphrase, generatePassword } from '@/lib/generate';
@@ -24,7 +26,13 @@ import type {
   GenerationType,
   PassphraseOptions,
 } from '@/lib/types';
-import { CircleHelpIcon, ClipboardIcon, RefreshCwIcon } from 'lucide-react';
+import {
+  CircleHelpIcon,
+  ClipboardIcon,
+  MinusIcon,
+  PlusIcon,
+  RefreshCwIcon,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const defaultPasswordOptions: PasswordOptions = {
@@ -38,14 +46,14 @@ const defaultPassphraseOptions: PassphraseOptions = {
   capitalize: true,
   includeNumber: false,
   wordSeparator: '-',
-  wordCount: 4,
+  wordCount: DEFAULT_PASSPHRASE_LENGTH,
 };
 
 export default function Home() {
   const [copied, setCopied] = useState(false);
   const [type, setType] = useState<GenerationType>(GENERATION_TYPES.PASSWORD);
   const [characterLength, setCharacterLength] = useState(
-    DEFAULT_CHARACTER_LENGTH
+    DEFAULT_PASSWORD_LENGTH
   );
   const [passwordOptions, setPasswordOptions] = useState<PasswordOptions>(
     defaultPasswordOptions
@@ -65,7 +73,7 @@ export default function Home() {
   useEffect(() => {
     const password = generatePassword(
       defaultPasswordOptions,
-      DEFAULT_CHARACTER_LENGTH
+      DEFAULT_PASSWORD_LENGTH
     );
     setGeneratedResult(password);
   }, []);
@@ -199,7 +207,56 @@ export default function Home() {
                       }}
                     />
                   </div>
-                ) : null}
+                ) : (
+                  <div className="grid gap-1">
+                    <Label className="text-lg">Word Count</Label>
+                    <div className="w-full flex items-center gap-1">
+                      <Button
+                        size="icon"
+                        disabled={
+                          passphraseOptions.wordCount ===
+                          PASSPHRASE_WORD_COUNT_CONFIG.MIN
+                        }
+                        onClick={() => {
+                          handlePassphraseOptionChange(
+                            'wordCount',
+                            passphraseOptions.wordCount - 1
+                          );
+                        }}
+                      >
+                        <MinusIcon />
+                      </Button>
+                      <Input
+                        type="number"
+                        className="w-15"
+                        min={PASSPHRASE_WORD_COUNT_CONFIG.MIN}
+                        max={PASSPHRASE_WORD_COUNT_CONFIG.MAX}
+                        value={passphraseOptions.wordCount}
+                        onChange={(event) =>
+                          handlePassphraseOptionChange(
+                            'wordCount',
+                            +event.target.value
+                          )
+                        }
+                      />
+                      <Button
+                        size="icon"
+                        disabled={
+                          passphraseOptions.wordCount ===
+                          PASSPHRASE_WORD_COUNT_CONFIG.MAX
+                        }
+                        onClick={() => {
+                          handlePassphraseOptionChange(
+                            'wordCount',
+                            passphraseOptions.wordCount + 1
+                          );
+                        }}
+                      >
+                        <PlusIcon />
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="grid gap-1">
                 <Label className="text-lg">Additional Options</Label>

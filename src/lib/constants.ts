@@ -15,7 +15,8 @@ export const PASSWORD_SCORES = {
   STRONG: 'strong',
 };
 
-export const DEFAULT_CHARACTER_LENGTH = 14;
+export const DEFAULT_PASSWORD_LENGTH = 14;
+export const DEFAULT_PASSPHRASE_LENGTH = 4;
 
 export const PASSPHRASE_WORD_COUNT_CONFIG = {
   MIN: 3,

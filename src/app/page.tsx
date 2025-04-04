@@ -35,7 +35,7 @@ import {
   RefreshCwIcon,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import zxcvbn from 'zxcvbn';
+import { zxcvbnAsync } from '@zxcvbn-ts/core';
 
 const defaultPasswordOptions: PasswordOptions = {
   uppercase: true,
@@ -73,15 +73,15 @@ export default function Home() {
   const [generatedResult, setGeneratedResult] = useState('');
 
   useEffect(() => {
-    const password = generatePassword(
-      defaultPasswordOptions,
-      DEFAULT_PASSWORD_LENGTH
-    );
-    setGeneratedResult(password);
+    (async () => {
+      await generatePasswordOrPhrase();
+    })();
   }, []);
 
   useEffect(() => {
-    generatePasswordOrPhrase();
+    (async () => {
+      await generatePasswordOrPhrase();
+    })();
   }, [type, passwordOptions, characterLength, passphraseOptions]);
 
   const copyToClipboard = async () => {
@@ -99,7 +99,7 @@ export default function Home() {
     }, 2500);
   };
 
-  function generatePasswordOrPhrase() {
+  async function generatePasswordOrPhrase() {
     const result =
       type === GENERATION_TYPES.PASSWORD
         ? generatePassword(passwordOptions, characterLength)
@@ -107,13 +107,12 @@ export default function Home() {
 
     setGeneratedResult(result);
 
-    // TODO:
-    // const analysis = zxcvbn(result);
-    // setPasswordStats({
-    //   score: passwordOrPhraseScoreToLabel(analysis.score),
-    //   timeToCrack:
-    //     analysis.crack_times_display.offline_slow_hashing_1e4_per_second.toString(),
-    // });
+    const analysis = await zxcvbnAsync(result);
+    setPasswordStats({
+      score: passwordOrPhraseScoreToLabel(analysis.score),
+      timeToCrack:
+        analysis.crackTimesDisplay.offlineSlowHashing1e4PerSecond.toString(),
+    });
   }
 
   const handlePasswordOptionChange = (

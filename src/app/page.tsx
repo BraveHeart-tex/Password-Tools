@@ -26,6 +26,7 @@ import type {
   GenerationType,
   PassphraseOptions,
 } from '@/lib/types';
+import { cn, passwordOrPhraseScoreToLabel } from '@/lib/utils';
 import {
   CircleHelpIcon,
   ClipboardIcon,
@@ -34,6 +35,7 @@ import {
   RefreshCwIcon,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import zxcvbn from 'zxcvbn';
 
 const defaultPasswordOptions: PasswordOptions = {
   uppercase: true,
@@ -79,7 +81,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    generate();
+    generatePasswordOrPhrase();
   }, [type, passwordOptions, characterLength, passphraseOptions]);
 
   const copyToClipboard = async () => {
@@ -97,12 +99,21 @@ export default function Home() {
     }, 2500);
   };
 
-  function generate() {
-    setGeneratedResult(
+  function generatePasswordOrPhrase() {
+    const result =
       type === GENERATION_TYPES.PASSWORD
         ? generatePassword(passwordOptions, characterLength)
-        : generatePassphrase(passphraseOptions)
-    );
+        : generatePassphrase(passphraseOptions);
+
+    setGeneratedResult(result);
+
+    // TODO:
+    // const analysis = zxcvbn(result);
+    // setPasswordStats({
+    //   score: passwordOrPhraseScoreToLabel(analysis.score),
+    //   timeToCrack:
+    //     analysis.crack_times_display.offline_slow_hashing_1e4_per_second.toString(),
+    // });
   }
 
   const handlePasswordOptionChange = (
@@ -159,23 +170,26 @@ export default function Home() {
                       : 'passphrase'}{' '}
                     score:
                   </span>
-                  <span>{passwordStats.score}</span>
+                  <span> {passwordStats.score}</span>
                 </div>
                 <div className="font-medium text-base">
-                  <span>Estimated time to crack:</span>
-                  <span>{passwordStats.timeToCrack}</span>
+                  <span>Estimated time to crack: </span>
+                  <span> {passwordStats.timeToCrack}</span>
                 </div>
               </div>
               <div
-                className="rounded-md bg-muted p-4 px-2 text-center font-[700] font-mono 
-                h-[5.5rem] flex items-center justify-center overflow-hidden"
-                data-allow-shifts
+                className={
+                  'rounded-md bg-muted p-4 px-2 text-center font-[700] font-mono min-h-[5.5rem] flex items-center justify-center overflow-auto'
+                }
               >
-                <div
-                  className={`${getFontSizeClass()} text-balance whitespace-pre-wrap`}
+                <span
+                  className={cn(
+                    'w-full break-words whitespace-pre-wrap text-balance',
+                    getFontSizeClass()
+                  )}
                 >
                   {generatedResult}
-                </div>
+                </span>
               </div>
               <div className="grid gap-2 md:grid-cols-2">
                 <Button
@@ -185,7 +199,7 @@ export default function Home() {
                   <ClipboardIcon />
                   {copied ? 'Copied!' : 'Copy to clipboard'}
                 </Button>
-                <Button onClick={generate} variant="outline">
+                <Button onClick={generatePasswordOrPhrase} variant="outline">
                   <RefreshCwIcon />
                   Regenerate
                 </Button>

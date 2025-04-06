@@ -262,7 +262,9 @@ const PasswordGenerator = () => {
           </div>
         ) : (
           <div className="grid gap-1">
-            <Label className="text-lg">Word Count</Label>
+            <Label className="text-lg" htmlFor="passphraseOptions.wordCount">
+              Word Count
+            </Label>
             <div className="w-full flex items-center gap-1">
               <Button
                 size="icon"
@@ -276,11 +278,14 @@ const PasswordGenerator = () => {
                     passphraseOptions.wordCount - 1
                   );
                 }}
+                aria-label="Decrease word count"
               >
                 <MinusIcon />
               </Button>
               <Input
+                id="passphraseOptions.wordCount"
                 type="number"
+                aria-label="Passphrase word count"
                 className="w-15"
                 min={PASSPHRASE_WORD_COUNT_CONFIG.MIN}
                 max={PASSPHRASE_WORD_COUNT_CONFIG.MAX}
@@ -295,6 +300,7 @@ const PasswordGenerator = () => {
                   passphraseOptions.wordCount ===
                   PASSPHRASE_WORD_COUNT_CONFIG.MAX
                 }
+                aria-label="Increase word count"
                 onClick={() => {
                   handlePassphraseOptionChange(
                     'wordCount',

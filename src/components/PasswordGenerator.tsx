@@ -310,7 +310,7 @@ const PasswordGenerator = () => {
       </div>
       <div className="grid gap-1">
         <Label className="text-lg">Additional Options</Label>
-        <div className="flex items-center gap-6">
+        <div className="grid grid-cols-2 sm:flex sm:items-center gap-6">
           <div className="flex items-center gap-2">
             {type === GENERATION_TYPES.PASSWORD ? (
               <>

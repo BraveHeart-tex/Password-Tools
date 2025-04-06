@@ -3,10 +3,28 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import PasswordGenerator from '@/components/PasswordGenerator';
 import PasswordStrengthChecker from '@/components/PasswordStrengthChecker';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Home() {
   return (
     <main className="bg-primary">
+      <Link
+        href="https://github.com/BraveHeart-tex/Password-Tools"
+        target="_blank"
+        rel="noreferrer"
+        className="absolute top-1 right-1"
+      >
+        <Image
+          src="/github.svg"
+          alt="Github"
+          width={30}
+          height={30}
+          className="invert"
+        />
+        <span className="sr-only">
+          Navigate to the Github repository of this project
+        </span>
+      </Link>
       <div className="w-full min-h-screen flex justify-center flex-col gap-6">
         <div className="text-center space-y-1 text-primary-foreground">
           <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">

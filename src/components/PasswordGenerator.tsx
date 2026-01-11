@@ -1,4 +1,13 @@
 'use client';
+import { zxcvbnAsync } from '@zxcvbn-ts/core';
+import {
+  CircleHelpIcon,
+  ClipboardIcon,
+  MinusIcon,
+  PlusIcon,
+  RefreshCwIcon,
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
@@ -12,30 +21,21 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import {
+  DEFAULT_PASSPHRASE_LENGTH,
   DEFAULT_PASSWORD_LENGTH,
   GENERATION_TYPES,
-  DEFAULT_PASSPHRASE_LENGTH,
   PASSPHRASE_WORD_COUNT_CONFIG,
   PASSWORD_LENGTHS,
   PASSWORD_SCORE_TEXT_CLASSES,
 } from '@/lib/constants';
 import { generatePassphrase, generatePassword } from '@/lib/generate';
 import type {
-  PasswordOptions,
   GenerationType,
   PassphraseOptions,
+  PasswordOptions,
   PasswordScoreLabel,
 } from '@/lib/types';
 import { cn, passwordOrPhraseScoreToLabel } from '@/lib/utils';
-import {
-  CircleHelpIcon,
-  ClipboardIcon,
-  MinusIcon,
-  PlusIcon,
-  RefreshCwIcon,
-} from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { zxcvbnAsync } from '@zxcvbn-ts/core';
 
 const defaultPasswordOptions: PasswordOptions = {
   uppercase: true,
@@ -272,6 +272,7 @@ const PasswordGenerator = () => {
                   passphraseOptions.wordCount ===
                   PASSPHRASE_WORD_COUNT_CONFIG.MIN
                 }
+                variant="secondary"
                 onClick={() => {
                   handlePassphraseOptionChange(
                     'wordCount',
@@ -300,6 +301,7 @@ const PasswordGenerator = () => {
                   passphraseOptions.wordCount ===
                   PASSPHRASE_WORD_COUNT_CONFIG.MAX
                 }
+                variant="secondary"
                 aria-label="Increase word count"
                 onClick={() => {
                   handlePassphraseOptionChange(
